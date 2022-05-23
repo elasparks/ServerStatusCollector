@@ -1,0 +1,6 @@
+@import 'reset.css';
+
+#statistics {
+    width: 100%;
+    max-width: 600px
+}

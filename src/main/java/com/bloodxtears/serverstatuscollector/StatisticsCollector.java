@@ -87,7 +87,7 @@ public class StatisticsCollector extends TimerTask {
 
     private double getHardDriveFreeSpace() {
         var partition = systemInfo.getOperatingSystem().getFileSystem().getFileStores().get(0);
-        return partition.getFreeSpace() / 1024.0 / 1024.0;
+        return partition.getFreeSpace() / 1024.0 / 1024.0 / 1024.0;
     }
 
     private double getAverageDNSConnectionTime() {
