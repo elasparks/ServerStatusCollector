@@ -21,7 +21,7 @@ public class StatisticsController {
     @ResponseBody
     public String statistics(@RequestParam String from, @RequestParam String to) throws JsonProcessingException {
         ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        return ow.writeValueAsString(statisticsDAO.getStatisticsRange(from,to));
+        return ow.writeValueAsString(statisticsDAO.getStatisticsRange(from, to));
     }
 
     @Autowired

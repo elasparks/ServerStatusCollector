@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -43,12 +44,27 @@ public class StatisticsCollector extends TimerTask {
     public void run() {
         Date date = new Date();
         Status status = new Status();
+        Status lastStatus = statisticsDAO.getLatestStatus();
         status.setDate(dateFormat.format(date));
         status.setTime(timeFormat.format(date));
+        if (lastStatus != null && lastStatus.getDate().equals(status.getDate())) {
+            long timeDifference = 0;
+            try {
+                Date lastTime = timeFormat.parse(lastStatus.getTime());
+                Date currentTime = timeFormat.parse(status.getTime());
+                timeDifference = currentTime.getTime() - lastTime.getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                System.exit(1);
+            }
+            if (timeDifference < HOUR)
+                return;
+        }
         status.setCpuUsagePercent(getCpuUsage());
         status.setRamUsagePercent(getRamUsage());
         status.setHardDriveFree(getHardDriveFreeSpace());
         status.setDnsConnectionTime(getAverageDNSConnectionTime());
+        statisticsDAO.updateStatistics(status);
     }
 
     private double getCpuUsage() {
@@ -61,15 +77,15 @@ public class StatisticsCollector extends TimerTask {
         return cpu.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
     }
 
-    private double getRamUsage(){
+    private double getRamUsage() {
         GlobalMemory ram = systemInfo.getHardware().getMemory();
         long totalRam = ram.getTotal();
-        long availableRam = ram.getTotal();
+        long availableRam = ram.getAvailable();
         long usedRam = totalRam - availableRam;
         return 100.0 / totalRam * usedRam;
     }
 
-    private double getHardDriveFreeSpace(){
+    private double getHardDriveFreeSpace() {
         var partition = systemInfo.getOperatingSystem().getFileSystem().getFileStores().get(0);
         return partition.getFreeSpace() / 1024.0 / 1024.0;
     }
