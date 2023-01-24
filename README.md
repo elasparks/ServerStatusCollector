@@ -13,7 +13,7 @@ This application was written as part of a course on developing applications in j
 Clone repository:
 
 ```sh
-git clone https://github.com/thekravchan/ServerStatusCollector
+git clone https://github.com/ElaSparks/ServerStatusCollector
 ```
 
 Run the programm:
